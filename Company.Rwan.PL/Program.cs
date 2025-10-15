@@ -1,3 +1,8 @@
+using Company.Rwan.BLL.interfaces;
+using Company.Rwan.BLL.Repositories;
+using Company.Rwan.DAL.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
+
 namespace Company.Rwan.PL
 {
     public class Program
@@ -8,6 +13,13 @@ namespace Company.Rwan.PL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>();
+
+            builder.Services.AddDbContext<CompanyDBContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             var app = builder.Build();
 
