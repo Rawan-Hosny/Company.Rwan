@@ -1,11 +1,31 @@
 ﻿@model IEnumerable<Employee>
 @{
     ViewData["Title"] = "Index";
+
+    // string? ViewDataMessage = ViewData["Message"] as string;
+    // string? ViewBagMessage = ViewBag.Message;
+
+   
+
 }
 
 <h1>All Employee</h1>
 <br />
 <br />
+@if (!string.IsNullOrEmpty(TempData["Message"] as string))
+{
+    <div class="m-3 alert alert-success">
+        <p>@TempData["Message"]</p>
+    </div>
+
+
+}
+<form>
+    <div>
+        <input placeholder="Search By Name" class="form-control" />
+		<input type="submit" value="Search" class="btn btn-outline-success " />
+    </div>
+</form>
 <a asp-action="Create" asp-controller="Employee"class="btn btn-primary">Create Employee</a>
 <br/>
 <br/>
@@ -24,6 +44,7 @@
                 <th>IsDeleted</th>
                 <th>@Html.DisplayNameFor(E => E.HiringDate)</th>
                 <th>@Html.DisplayNameFor(E => E.CreateAt)</th>
+                <th>Department</th>
                 <th>Details</th>
                 <th>Update</th>
                 <th>Delete</th>
@@ -65,6 +86,18 @@
                     <td>
                         @item.CreateAt
                     </td>
+                    @if(item.Department is null)
+                    {
+                        <td>
+                            No Department
+                        </td>
+                    }
+		            else
+                    {
+                        <td>
+						@item.Department?.Name 
+					     </td>
+                    }
 
                     <partial name="_ButtonPartialView" model="@item.Id" />
                 </tr>

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Company.Rwan.DAL.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Company.Rwan.PL.Dtos
 {
@@ -25,5 +26,11 @@ namespace Company.Rwan.PL.Dtos
         public DateTime HiringDate { get; set; }
         [System.ComponentModel.DisplayName("Created At")]
         public DateTime CreateAt { get; set; }
+
+        public int? DepartmentId { get; set; }
+
+        public Department? Department { get; set; }
+
+
     }
 }

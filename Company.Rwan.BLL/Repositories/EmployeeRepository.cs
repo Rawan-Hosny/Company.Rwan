@@ -1,6 +1,7 @@
 ﻿using Company.Rwan.BLL.interfaces;
 using Company.Rwan.DAL.Data.Contexts;
 using Company.Rwan.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,17 @@ namespace Company.Rwan.BLL.Repositories
 {
     public class EmployeeRepository : GenericRepository<Employee>, IEmployeeRepository
     {
+        private readonly CompanyDBContext _context;
         public EmployeeRepository(CompanyDBContext context) : base(context)
         {
+            _context = context;
+        }
+
+        public CompanyDBContext Context { get; }
+
+        public List<Employee> GetByName(string name)
+        {
+            return _context.Employees.Include(E =>E .Department).Where(E => E.Name.ToLower().Contains(name.ToLower())).ToList();
         }
         //    private readonly CompanyDBContext _context;
         //    public EmployeeRepository(CompanyDBContext context)

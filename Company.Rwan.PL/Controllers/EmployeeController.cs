@@ -9,21 +9,39 @@ namespace Company.Rwan.PL.Controllers
     {
         
             private readonly IEmployeeRepository _employeeRepository;
-            public EmployeeController(IEmployeeRepository employeeRepository)
+
+           private readonly IDepartmentRepository _departmentRepository;
+        public EmployeeController(IEmployeeRepository employeeRepository,IDepartmentRepository departmentRepository)
             {
             _employeeRepository = employeeRepository;
-            }
+            _departmentRepository = departmentRepository;
+        }
             [HttpGet]
-            public IActionResult Index()
+            public IActionResult Index(string? SearchInput)
+            
             {
-                var employees = _employeeRepository.GetAll();
+           IEnumerable<Employee> employees;
+            if (string.IsNullOrEmpty(SearchInput))
+            {
 
-                return View(employees);
+                employees = _employeeRepository.GetAll();
             }
+            else
+            {
+                employees = _employeeRepository.GetByName(SearchInput);
+            }
+                //ViewData["Message"] = "Hello From ViewData";
+                //ViewBag.Message = "Hello from ViewBag";
+                return View(employees);
+               
+        }
             [HttpGet]
             public IActionResult Create()
             {
-                return View();
+            var departments=_departmentRepository.GetAll();
+            ViewData["departments"] = departments;
+
+            return View();
             }
             [HttpPost]
             public IActionResult Create(CreateEmployeeDto model)
@@ -41,30 +59,34 @@ namespace Company.Rwan.PL.Controllers
                         IsActive = model.IsActive,
                         IsDeleted = model.IsDeleted,
                         HiringDate = model.HiringDate,
-                        CreateAt = model.CreateAt
+                        CreateAt = model.CreateAt,
+                        DepartmentId = model.DepartmentId
 
                     };
                     var count = _employeeRepository.Add(employee);
                     if (count > 0)
                     {
-                        return RedirectToAction(nameof(Index));
+                    TempData["Message"] = "Employee is Created !!";
+                    return RedirectToAction(nameof(Index));
                     }
                 }
                 return View(model);
             }
 
             [HttpGet]
-            public IActionResult Details(int? id, string ViewName = "Details")
+            public IActionResult Details(int? id)
             {
                 if (id is null) return BadRequest("Invalid Id");
                 var employee = _employeeRepository.Get(id.Value);
                 if (employee is null) return NotFound(new { StatusCode = 404, message = $"Employee With Id:{id} is not found" });
-                return View(ViewName, employee);
+                return View(employee);
             }
             [HttpGet]
 
             public IActionResult Edit(int? id)
             {
+            var departments = _departmentRepository.GetAll();
+            ViewData["departments"] = departments;
             if (id is null) return BadRequest("Invalid Id");
             var employee=_employeeRepository.Get(id.Value);
             if (employee is null) return NotFound(new { StatusCode = 404, message = $"Employee With Id:{id}is not found" });
@@ -80,7 +102,8 @@ namespace Company.Rwan.PL.Controllers
                 IsActive = employee.IsActive,
                 IsDeleted = employee.IsDeleted,
                 HiringDate = employee.HiringDate,
-                CreateAt = employee.CreateAt
+                CreateAt = employee.CreateAt,
+                DepartmentId = employee.DepartmentId
 
             };
             return View(employeedto);
@@ -107,7 +130,8 @@ namespace Company.Rwan.PL.Controllers
                     IsActive = model.IsActive,
                     IsDeleted = model.IsDeleted,
                     HiringDate = model.HiringDate,
-                    CreateAt = model.CreateAt
+                    CreateAt = model.CreateAt,
+                    DepartmentId = model.DepartmentId
 
                 };
                 var count = _employeeRepository.Update(employee);
@@ -122,9 +146,12 @@ namespace Company.Rwan.PL.Controllers
             [HttpGet]
             public IActionResult Delete(int? id)
             {
-               
-                return Details(id, "Delete");
-            }
+
+            if (id is null) return BadRequest("Invalid Id");
+            var employee = _employeeRepository.Get(id.Value);
+            if (employee is null) return NotFound(new { StatusCode = 404, message = $"Employee With Id:{id} is not found" });
+            return View(employee);
+        }
 
             [HttpPost]
             [ValidateAntiForgeryToken]

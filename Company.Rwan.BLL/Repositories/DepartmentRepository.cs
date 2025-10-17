@@ -11,8 +11,17 @@ namespace Company.Rwan.BLL.Repositories
 {
     public class DepartmentRepository : GenericRepository<Department>, IDepartmentRepository
     {
+        private readonly CompanyDBContext _context;
+
         public DepartmentRepository(CompanyDBContext context) : base(context)
         {
+            _context = context;
+        }
+
+        public List<Department> GetByName(string name)
+        {
+            return _context.Departments.Where(d => d.Name.ToLower().Contains(name.ToLower())).ToList();
+
         }
         //private readonly CompanyDBContext _context;
         //public DepartmentRepository(CompanyDBContext context)

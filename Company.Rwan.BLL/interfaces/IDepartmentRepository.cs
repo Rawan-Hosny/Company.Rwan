@@ -14,5 +14,6 @@ namespace Company.Rwan.BLL.interfaces
         //int Add(Department model);
         //int Update(Department model);  
         //int Delete(Department model);
+        List<Department> GetByName(string name);
     }
 }
